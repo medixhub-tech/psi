@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+/vendor/
+/node_modules/
+/storage/*.key
+/storage/app/private/
+/storage/logs/*
+/auth.json
+*.pem
+*.key
+*.sql.gz
+/backups/
