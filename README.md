@@ -1,15 +1,65 @@
-# Medixhub — sistema para consultório de psicologia
+# Medpsico
 
-Repositório do projeto: https://github.com/medixhub-tech/psi
+Sistema para consultório individual de psicologia: PHP 8.3, Laravel 13, MySQL 8.4 e AdminLTE 4. Repositório: https://github.com/medixhub-tech/psi.
 
-Fluxo autorizado: branches `codex/`, Pull Requests e merge após revisão das alterações e verificações disponíveis. Não versionar credenciais, documentos clínicos ou dados reais de pacientes.
+## Estado da primeira entrega
 
-Especificação inicial para um psicólogo individual, com usuários auxiliares e implantação em WHM/cPanel. Esta entrega documenta o projeto; ainda não contém a aplicação funcional.
+Implementados: login/logout, limitação de tentativas, recuperação de senha, painel AdminLTE em português, cadastro/edição/desativação de usuários, criação/edição de perfis, permissões exclusivas do psicólogo e auditoria administrativa. Alterações de usuário/perfil e recuperação de senha invalidam sessões anteriores. Sem cadastro público, senha padrão ou dados reais de pacientes.
+
+Agenda, pacientes, cobrança, prontuário, documentos e integrações ainda serão implementados. As permissões desses módulos já estão catalogadas, mas não representam funcionalidades disponíveis nesta entrega. MFA ainda não implementado. Não está liberado para operação clínica em produção.
+
+## Executar localmente
+
+Requisitos: PHP 8.3 com extensões do Laravel e PDO MySQL, MySQL 8.4 e Composer 2. Os assets AdminLTE 4.0.0 e Bootstrap 5.3.8 estão versionados localmente com suas licenças; não é necessário Node para esta etapa.
+
+```sh
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+
+Crie um banco MySQL vazio e um usuário para a aplicação. Configure `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` e `DB_PASSWORD` no `.env`. Se usar socket local, adicione `DB_SOCKET`. Em seguida:
+
+```sh
+php artisan migrate --seed
+php artisan psi:create-owner
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+O comando `psi:create-owner` solicita os dados do profissional e a senha oculta, com confirmação. Execute uma única vez. Acesse http://127.0.0.1:8000/entrar. No painel do psicólogo, crie o usuário da secretária; comunique a senha inicial por canal privado. O próprio usuário pode redefini-la pelo fluxo de recuperação quando o e-mail estiver configurado.
+
+No Mac preparado durante o desenvolvimento, PHP está em `/opt/homebrew/opt/php@8.3/bin/php`. Se não estiver no PATH, use esse caminho ou configure seu terminal. A instalação Homebrew do MySQL não é iniciada automaticamente por este projeto.
+
+Por padrão, `MAIL_MAILER=log` é somente desenvolvimento: e-mails não são enviados e links de recuperação aparecem no log local privado. Para entrega real, configure SMTP/API em `config/mail.php` via `.env`, valide remetente e envio antes do uso. Nunca exponha `storage/` publicamente.
+
+## Testes
+
+```sh
+php artisan test --compact
+```
+
+A suíte rápida usa SQLite em memória para isolamento, sem mudar o banco de produção. Para verificar MySQL, crie um banco **descartável e exclusivo** e execute:
+
+```sh
+DB_CONNECTION=mysql DB_DATABASE=medpsico_testing DB_USERNAME=USUARIO_TESTE DB_PASSWORD=SENHA_TESTE php artisan test --compact
+```
+
+Os testes recriam as tabelas do banco indicado. Nunca use o banco de produção. A integração contínua usa MySQL 8.4 isolado.
+
+## cPanel
+
+A raiz do domínio deve apontar para `public/`. Configurar PHP web/CLI 8.3, `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` HTTPS e `SESSION_SECURE_COOKIE=true`. Banco, `.env`, uploads e logs ficam fora da pasta pública. Gerar uma chave própria na primeira instalação e preservá-la nas atualizações. Usar `composer install --no-dev --optimize-autoloader`, migrations revisadas e backup antes de atualizar. `storage/` e `bootstrap/cache/` precisam de escrita pelo usuário da aplicação; não usar permissões 777.
+
+Após configurar o ambiente, executar `php artisan config:cache` e `php artisan view:cache`. O cron e as integrações serão adicionados na etapa correspondente; esta entrega não envia lembretes.
+
+## Modelagem e documentação
 
 - [Requisitos e critérios de aceite](docs/01-requisitos.md)
-- [Arquitetura e implantação](docs/02-arquitetura.md)
-- [Modelo de dados e regras de integridade](docs/03-modelo-de-dados.md)
-- [Etapas de desenvolvimento e decisões pendentes](docs/04-plano.md)
-- [DDL inicial MySQL](database/schema.sql)
+- [Arquitetura e hospedagem](docs/02-arquitetura.md)
+- [Modelo relacional completo](docs/03-modelo-de-dados.md)
+- [Plano de desenvolvimento](docs/04-plano.md)
+- [DDL de referência do escopo completo](database/schema.sql)
 
-PHP 8.3, MySQL e AdminLTE são requisitos confirmados. Laravel 13, AdminLTE 4 e MySQL 8.4 são escolhas técnicas propostas, sujeitas à conferência da hospedagem. Não importar o DDL em banco existente: é uma referência inicial para um banco vazio e será convertido em migrations quando a implementação começar.
+Para instalar a aplicação, use **migrations**, não importe `schema.sql`. O DDL é referência do escopo completo; a aplicação implementa apenas as tabelas da fundação. Nas migrations, `users.password` segue a convenção Laravel em vez de `password_hash`; perfis recebem timestamps, permissões recebem nome e sessões/recuperação/cache/jobs seguem o framework. A linha `practice.id=1` é criada somente pelo comando de bootstrap.
+
+Fluxo de publicação: branches `codex/`, Pull Requests e merge após verificações. `.env`, credenciais, logs e dados clínicos nunca devem ser commitados. Alterar um repositório público para privado no futuro não recolhe cópias já feitas.

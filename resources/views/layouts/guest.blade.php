@@ -1,0 +1,3 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>@yield('title','Acesso') · Medpsico</title><link rel="stylesheet" href="{{ asset('vendor/adminlte/adminlte.min.css') }}"><link rel="stylesheet" href="{{ asset('css/app.css') }}"></head>
+<body class="login-page"><main class="login-box"><div class="login-logo"><span class="brand-mark">m</span> med<span class="fw-bold">psico</span></div><div class="card border-0 shadow-sm"><div class="card-body p-4">@include('partials.feedback') @yield('content')</div></div><p class="text-center text-secondary small mt-4">Seu consultório, com cuidado em cada detalhe.</p></main></body></html>

@@ -38,3 +38,10 @@
 ## Estado desta entrega
 
 Requisitos, arquitetura, modelo relacional e DDL de referência criados. Nenhuma instalação, implantação ou integração externa foi executada. Este ambiente não disponibiliza executáveis MySQL, Docker ou PHP; validação de execução e compatibilidade do servidor permanece pendente. A conferência local cobre estrutura documental e referências do DDL, sem afirmar validação sintática/operacional por MySQL.
+
+
+## Atualização — fundação implementada
+
+Login/logout, recuperação de senha, usuários, perfis, revogação de sessões, auditoria administrativa e interface AdminLTE implementados na branch `codex/fundacao-autenticacao`. Testes: 19 cenários e 103 verificações com PHP 8.3.33, SQLite e MySQL 8.4.11. Login e painel conferidos no navegador com conta fictícia em banco isolado. O DDL de referência de 23 tabelas também foi importado com sucesso em outro banco descartável. Isso atualiza as limitações de ambiente descritas na entrega documental inicial.
+
+A instalação agora utiliza migrations; `database/schema.sql` permanece referência do escopo completo. E-mail real, agenda, pacientes, financeiro, prontuário, documentos e integrações não estão entregues nesta etapa. Não houve implantação em servidor cPanel.

@@ -1,0 +1,8 @@
+@extends('layouts.app')
+@section('title','Visão geral')
+@section('subtitle','Um espaço para organizar a rotina e cuidar de quem importa.')
+@section('content')
+<div class="card welcome-card mb-4"><div class="card-body p-4 p-lg-5"><span class="badge text-bg-light mb-3">CONFIGURAÇÃO INICIAL</span><h2 class="h3">Olá, {{ explode(' ',auth()->user()->name)[0] }}.</h2><p class="mb-0 welcome-copy">A base do seu consultório está pronta. @can('users.manage')Comece organizando quem terá acesso ao sistema.@else Seu acesso está ativo. Os módulos de atendimento estarão disponíveis nas próximas etapas.@endcan</p></div></div>
+@can('users.manage')<div class="row g-4"><div class="col-md-6"><div class="card h-100"><div class="card-body p-4"><div class="section-icon mb-3">♙</div><h2 class="h5">Equipe do consultório</h2><p class="text-secondary">Crie acessos individuais e mantenha o controle sobre os usuários ativos.</p><a class="btn btn-primary" href="{{ route('users.index') }}">Gerenciar usuários</a></div></div></div><div class="col-md-6"><div class="card h-100"><div class="card-body p-4"><div class="section-icon mb-3">▤</div><h2 class="h5">Perfis de acesso</h2><p class="text-secondary">Defina as tarefas operacionais de cada perfil. Dados clínicos e gestão financeira permanecem exclusivos do psicólogo.</p><a class="btn btn-outline-primary" href="{{ route('roles.index') }}">Configurar perfis</a></div></div></div></div>@endcan
+<div class="card mt-4"><div class="card-body p-4"><h2 class="h6">Próximas etapas</h2><p class="text-secondary mb-0">Agenda e fila de atendimento, pacientes, financeiro, prontuário, documentos e integrações estão previstos no desenvolvimento. Ainda não há consultas ou dados clínicos disponíveis nesta versão.</p></div></div>
+@endsection
