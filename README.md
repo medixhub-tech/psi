@@ -2,11 +2,13 @@
 
 Sistema para consultório individual de psicologia: PHP 8.3, Laravel 13, MySQL 8.4 e AdminLTE 4. Repositório: https://github.com/medixhub-tech/psi.
 
-## Estado da primeira entrega
+## Estado do desenvolvimento
 
 Implementados: login/logout, limitação de tentativas, recuperação de senha, painel AdminLTE em português, cadastro/edição/desativação de usuários, criação/edição de perfis, permissões exclusivas do psicólogo e auditoria administrativa. Alterações de usuário/perfil e recuperação de senha invalidam sessões anteriores. Sem cadastro público, senha padrão ou dados reais de pacientes.
 
-Agenda, pacientes, cobrança, prontuário, documentos e integrações ainda serão implementados. As permissões desses módulos já estão catalogadas, mas não representam funcionalidades disponíveis nesta entrega. MFA ainda não implementado. Não está liberado para operação clínica em produção.
+Também implementados: cadastro administrativo de pacientes, agenda diária, bloqueios de horário, reagendamento/cancelamento, histórico e fila com atualização a cada 15 segundos. A secretária registra chegada/falta; somente o profissional chama e conclui o atendimento. Alterações usam transações, bloqueio da agenda e controle de versão para impedir sobreposição e sobrescrita de dados desatualizados.
+
+Cobrança, prontuário, documentos e integrações ainda serão implementados. As permissões desses módulos já estão catalogadas, mas não representam funcionalidades disponíveis nesta entrega. MFA ainda não implementado. Não está liberado para operação clínica em produção.
 
 ## Executar localmente
 
@@ -60,6 +62,8 @@ Após configurar o ambiente, executar `php artisan config:cache` e `php artisan 
 - [Plano de desenvolvimento](docs/04-plano.md)
 - [DDL de referência do escopo completo](database/schema.sql)
 
-Para instalar a aplicação, use **migrations**, não importe `schema.sql`. O DDL é referência do escopo completo; a aplicação implementa apenas as tabelas da fundação. Nas migrations, `users.password` segue a convenção Laravel em vez de `password_hash`; perfis recebem timestamps, permissões recebem nome e sessões/recuperação/cache/jobs seguem o framework. A linha `practice.id=1` é criada somente pelo comando de bootstrap.
+Para instalar a aplicação, use **migrations**, não importe `schema.sql`. O DDL é referência do escopo completo; a aplicação implementa as tabelas da fundação, pacientes e agenda. Nas migrations, `users.password` segue a convenção Laravel em vez de `password_hash`; perfis recebem timestamps, permissões recebem nome e sessões/recuperação/cache/jobs seguem o framework. Na agenda, datas são armazenadas em UTC e apresentadas no fuso do consultório (padrão America/Sao_Paulo). Agendamento simples, sem recorrência; intervalo máximo de 12 horas. Reagendamento de paciente aguardando exige confirmação e o remove da fila. O cadastro inativo impede novos agendamentos e preserva os anteriores. A cobrança será implementada na próxima etapa.
+
+A linha `practice.id=1` é criada somente pelo comando de bootstrap.
 
 Fluxo de publicação: branches `codex/`, Pull Requests e merge após verificações. `.env`, credenciais, logs e dados clínicos nunca devem ser commitados. Alterar um repositório público para privado no futuro não recolhe cópias já feitas.

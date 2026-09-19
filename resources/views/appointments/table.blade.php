@@ -1,0 +1,5 @@
+<div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Horário</th><th>Paciente</th><th>Situação</th><th>Atendimento</th><th>Ações</th></tr></thead><tbody>
+@forelse($appointments as $appointment)
+<tr><td class="text-nowrap"><strong>{{ $appointment->starts_at->setTimezone($timezone)->format('H:i') }}</strong><br><small class="text-secondary">até {{ $appointment->ends_at->setTimezone($timezone)->format('H:i') }}</small></td><td>{{ $appointment->patient->full_name }}</td><td><span class="badge {{ match($appointment->status) {'waiting'=>'text-bg-warning','in_progress'=>'text-bg-primary','completed'=>'text-bg-success',default=>'text-bg-secondary'} }}">{{ $appointment->statusLabel() }}</span></td><td>{{ $appointment->modality==='online'?'On-line':'Presencial' }}<br><small class="text-secondary">{{ $appointment->location }}</small></td><td>@include('appointments.actions')</td></tr>
+@empty<tr><td colspan="5" class="text-center text-secondary p-5">Nenhuma consulta para este dia.</td></tr>@endforelse
+</tbody></table></div>

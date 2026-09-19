@@ -45,3 +45,9 @@ Requisitos, arquitetura, modelo relacional e DDL de referência criados. Nenhuma
 Login/logout, recuperação de senha, usuários, perfis, revogação de sessões, auditoria administrativa e interface AdminLTE implementados na branch `codex/fundacao-autenticacao`. Testes: 19 cenários e 103 verificações com PHP 8.3.33, SQLite e MySQL 8.4.11. Login e painel conferidos no navegador com conta fictícia em banco isolado. O DDL de referência de 23 tabelas também foi importado com sucesso em outro banco descartável. Isso atualiza as limitações de ambiente descritas na entrega documental inicial.
 
 A instalação agora utiliza migrations; `database/schema.sql` permanece referência do escopo completo. E-mail real, agenda, pacientes, financeiro, prontuário, documentos e integrações não estão entregues nesta etapa. Não houve implantação em servidor cPanel.
+
+## Atualização — pacientes e agenda
+
+Cadastro administrativo, agenda diária, bloqueios, reagendamento/cancelamento com histórico, chegada, falta, fila atualizada a cada 15 segundos, chamada e conclusão implementados em `codex/pacientes-agenda`. A agenda usa transação com bloqueio da linha do consultório e versões por registro; somente um atendimento pode estar em andamento. Testes de permissões, sobreposição, bloqueios, transições, versões desatualizadas e fronteira de data local passaram em SQLite e MySQL: 31 testes, 219 verificações no total. O teste de disputa entre processos simultâneos permanece para a homologação.
+
+A próxima etapa é cobrança e financeiro; esta entrega ainda não registra recebimentos, envia lembretes ou sincroniza o Google Agenda.
