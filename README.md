@@ -8,7 +8,9 @@ Implementados: login/logout, limitação de tentativas, recuperação de senha, 
 
 Também implementados: cadastro administrativo de pacientes, agenda diária, bloqueios de horário, reagendamento/cancelamento, histórico e fila com atualização a cada 15 segundos. A secretária registra chegada/falta; somente o profissional chama e conclui o atendimento. Alterações usam transações, bloqueio da agenda e controle de versão para impedir sobreposição e sobrescrita de dados desatualizados.
 
-Cobrança, prontuário, documentos e integrações ainda serão implementados. As permissões desses módulos já estão catalogadas, mas não representam funcionalidades disponíveis nesta entrega. MFA ainda não implementado. Não está liberado para operação clínica em produção.
+Implementados: tipos de atendimento e valores cadastrados pelo profissional; cobrança por consulta; recebimentos parciais ou integrais; estornos integrais; ajustes com motivo e resumo financeiro por período. A secretária acessa somente cobranças das consultas do dia local.
+
+Prontuário, documentos e integrações permanecem pendentes. As permissões desses módulos já estão catalogadas, mas não representam funcionalidades disponíveis nesta entrega. MFA ainda não implementado. Não está liberado para operação clínica em produção.
 
 ## Executar localmente
 
@@ -62,8 +64,10 @@ Após configurar o ambiente, executar `php artisan config:cache` e `php artisan 
 - [Plano de desenvolvimento](docs/04-plano.md)
 - [DDL de referência do escopo completo](database/schema.sql)
 
-Para instalar a aplicação, use **migrations**, não importe `schema.sql`. O DDL é referência do escopo completo; a aplicação implementa as tabelas da fundação, pacientes e agenda. Nas migrations, `users.password` segue a convenção Laravel em vez de `password_hash`; perfis recebem timestamps, permissões recebem nome e sessões/recuperação/cache/jobs seguem o framework. Na agenda, datas são armazenadas em UTC e apresentadas no fuso do consultório (padrão America/Sao_Paulo). Agendamento simples, sem recorrência; intervalo máximo de 12 horas. Reagendamento de paciente aguardando exige confirmação e o remove da fila. O cadastro inativo impede novos agendamentos e preserva os anteriores. A cobrança será implementada na próxima etapa.
+Para instalar a aplicação, use **migrations**, não importe `schema.sql`. O DDL é referência do escopo completo; a aplicação implementa as tabelas da fundação, pacientes e agenda. Nas migrations, `users.password` segue a convenção Laravel em vez de `password_hash`; perfis recebem timestamps, permissões recebem nome e sessões/recuperação/cache/jobs seguem o framework. Na agenda, datas são armazenadas em UTC e apresentadas no fuso do consultório (padrão America/Sao_Paulo). Agendamento simples, sem recorrência; intervalo máximo de 12 horas. Reagendamento de paciente aguardando exige confirmação e o remove da fila. O cadastro inativo impede novos agendamentos e preserva os anteriores. Antes de agendar, o profissional cadastra os tipos de atendimento e valores. Mudanças de preço não alteram consultas existentes. Consultas anteriores ficam sem valor até ajuste pelo profissional. Reagendamento preserva recebimentos; falta e cancelamento não dispensam a cobrança automaticamente.
 
 A linha `practice.id=1` é criada somente pelo comando de bootstrap.
 
-Fluxo de publicação: branches `codex/`, Pull Requests e merge após verificações. `.env`, credenciais, logs e dados clínicos nunca devem ser commitados. Alterar um repositório público para privado no futuro não recolhe cópias já feitas.
+Fluxo autorizado: branches `codex/` e merge direto na `main` após verificações, sem Pull Requests. `.env`, credenciais, logs e dados clínicos nunca devem ser commitados. Alterar um repositório público para privado no futuro não recolhe cópias já feitas.
+
+Recebimentos e estornos são registros internos, sem transferência bancária automática. Totais usam a data do lançamento; saldos usam o vencimento da consulta e todos os pagamentos atuais. Despesas, conciliação bancária e emissão fiscal não fazem parte desta etapa.

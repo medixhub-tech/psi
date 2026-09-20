@@ -75,3 +75,11 @@ Mensagem base: “Olá, {primeiro_nome}! Lembramos que sua consulta com {profiss
 8. Finalização e revisão do prontuário preservam autor, data e versão; download exige sessão e autorização vigente.
 9. Restauração em ambiente isolado recupera banco, documentos e capacidade de descriptografar dados protegidos.
 10. Faltas, consultas concluídas e pagamentos permanecem estados independentes; relatórios distinguem data da consulta e data do recebimento.
+
+## Atualização de cobrança e financeiro
+
+Decisão confirmada: o profissional cadastra tipos de atendimento e respectivos valores. A secretária seleciona o tipo no agendamento; o nome e o valor vigente ficam preservados. Implementadas as tabelas service_types, charges, payments, payment_reversals e charge_history pelas migrations. O DDL de referência antecede esta etapa; instalar e atualizar sempre pelas migrations. Consultas legadas ficam com valor a definir.
+
+A secretária consulta e registra recebimentos somente nas consultas do dia local. Ajustes, dispensa, anulação, estornos e relatórios são exclusivos do profissional. Recebimentos parciais/integral usam centavos inteiros e DECIMAL no MySQL; UUID garante idempotência. Travas e controle de versão protegem saldo e reagendamento concorrente.
+
+Validação local: 49 testes e 363 verificações em MySQL, incluindo dois cenários entre processos simultâneos. SQLite: 47 testes e 351 verificações; dois testes exclusivos de MySQL ignorados. Telas conferidas com dados fictícios. Próxima etapa: prontuário e documentos. Sem implantação no cPanel. Git: merge direto na main, sem PR, conforme autorizado.

@@ -88,3 +88,11 @@ Telas operacionais devem selecionar campos explicitamente, nunca expor relaçõe
 Sem seeds, migrations do framework, aplicação ou integração real. Recorrências, sync tokens de entrada Google, regras configuráveis de lembretes por e-mail e configuração detalhada de preço serão adicionados após as decisões correspondentes. A preferência de comunicação guarda estado corrente; mudanças precisam também de evento de auditoria. SQL foi revisado estruturalmente, mas exige importação e testes de constraints em MySQL 8.4 antes do uso.
 
 Referência técnica: [MySQL — chaves estrangeiras/InnoDB](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html).
+
+## Atualização de cobrança e financeiro
+
+Decisão confirmada: o profissional cadastra tipos de atendimento e respectivos valores. A secretária seleciona o tipo no agendamento; o nome e o valor vigente ficam preservados. Implementadas as tabelas service_types, charges, payments, payment_reversals e charge_history pelas migrations. O DDL de referência antecede esta etapa; instalar e atualizar sempre pelas migrations. Consultas legadas ficam com valor a definir.
+
+A secretária consulta e registra recebimentos somente nas consultas do dia local. Ajustes, dispensa, anulação, estornos e relatórios são exclusivos do profissional. Recebimentos parciais/integral usam centavos inteiros e DECIMAL no MySQL; UUID garante idempotência. Travas e controle de versão protegem saldo e reagendamento concorrente.
+
+Validação local: 49 testes e 363 verificações em MySQL, incluindo dois cenários entre processos simultâneos. SQLite: 47 testes e 351 verificações; dois testes exclusivos de MySQL ignorados. Telas conferidas com dados fictícios. Próxima etapa: prontuário e documentos. Sem implantação no cPanel. Git: merge direto na main, sem PR, conforme autorizado.

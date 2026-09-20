@@ -51,3 +51,11 @@ A instalação agora utiliza migrations; `database/schema.sql` permanece referê
 Cadastro administrativo, agenda diária, bloqueios, reagendamento/cancelamento com histórico, chegada, falta, fila atualizada a cada 15 segundos, chamada e conclusão implementados em `codex/pacientes-agenda`. A agenda usa transação com bloqueio da linha do consultório e versões por registro; somente um atendimento pode estar em andamento. Testes de permissões, sobreposição, bloqueios, transições, versões desatualizadas e fronteira de data local passaram em SQLite e MySQL: 31 testes, 219 verificações no total. O teste de disputa entre processos simultâneos permanece para a homologação.
 
 A próxima etapa é cobrança e financeiro; esta entrega ainda não registra recebimentos, envia lembretes ou sincroniza o Google Agenda.
+
+## Atualização de cobrança e financeiro
+
+Decisão confirmada: o profissional cadastra tipos de atendimento e respectivos valores. A secretária seleciona o tipo no agendamento; o nome e o valor vigente ficam preservados. Implementadas as tabelas service_types, charges, payments, payment_reversals e charge_history pelas migrations. O DDL de referência antecede esta etapa; instalar e atualizar sempre pelas migrations. Consultas legadas ficam com valor a definir.
+
+A secretária consulta e registra recebimentos somente nas consultas do dia local. Ajustes, dispensa, anulação, estornos e relatórios são exclusivos do profissional. Recebimentos parciais/integral usam centavos inteiros e DECIMAL no MySQL; UUID garante idempotência. Travas e controle de versão protegem saldo e reagendamento concorrente.
+
+Validação local: 49 testes e 363 verificações em MySQL, incluindo dois cenários entre processos simultâneos. SQLite: 47 testes e 351 verificações; dois testes exclusivos de MySQL ignorados. Telas conferidas com dados fictícios. Próxima etapa: prontuário e documentos. Sem implantação no cPanel. Git: merge direto na main, sem PR, conforme autorizado.
