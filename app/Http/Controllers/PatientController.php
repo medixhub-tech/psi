@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class PatientController extends Controller
@@ -49,6 +50,7 @@ class PatientController extends Controller
         $data = $this->validated($request);
         $request->validate(['lock_version' => 'required|integer|min:1']);
         DB::transaction(function () use ($data, $patient, $request) {
+            DB::table('practice')->where('id', 1)->lockForUpdate()->first();
             $record = Patient::lockForUpdate()->findOrFail($patient->id);
             if ($record->lock_version !== (int) $request->input('lock_version')) {
                 throw ValidationException::withMessages(['patient' => 'O cadastro foi alterado. Reabra a página antes de salvar.']);
@@ -64,6 +66,6 @@ class PatientController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate(['full_name' => 'required|string|max:160', 'birth_date' => 'nullable|date_format:Y-m-d|before_or_equal:today', 'phone' => 'nullable|string|max:25', 'email' => 'nullable|email|max:254', 'guardian_name' => 'nullable|string|max:160', 'guardian_phone' => 'nullable|string|max:25', 'active' => 'required|boolean']);
+        return $request->validate(['whatsapp_reminders' => 'sometimes|boolean', 'email_reminders' => 'sometimes|boolean', 'communication_source' => 'nullable|required_if:whatsapp_reminders,1|required_if:email_reminders,1|string|max:160', 'full_name' => 'required|string|max:160', 'birth_date' => 'nullable|date_format:Y-m-d|before_or_equal:today', 'phone' => ['nullable', 'required_if:whatsapp_reminders,1', 'string', 'max:25', Rule::when($request->boolean('whatsapp_reminders'), 'regex:/^\+[1-9][0-9]{9,14}$/')], 'email' => 'nullable|required_if:email_reminders,1|email|max:254', 'guardian_name' => 'nullable|string|max:160', 'guardian_phone' => 'nullable|string|max:25', 'active' => 'required|boolean']);
     }
 }

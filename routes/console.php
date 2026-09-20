@@ -1,3 +1,5 @@
 <?php
 
-// As tarefas de integração serão adicionadas no módulo correspondente.
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('psi:integrations')->everyMinute()->withoutOverlapping(2);

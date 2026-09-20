@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ClinicalController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\IntegrationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -55,6 +56,14 @@ Route::middleware(['auth', 'active.session'])->group(function () {
         Route::post('/pacientes/{patient}/documentos', [DocumentController::class, 'store'])->name('documents.store');
         Route::get('/pacientes/{patient}/documentos/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
         Route::put('/pacientes/{patient}/documentos/{document}/arquivo', [DocumentController::class, 'archive'])->name('documents.archive');
+    });
+    Route::middleware('can:integrations.manage')->group(function () {
+        Route::get('/integracoes', [IntegrationController::class, 'index'])->name('integrations.index');
+        Route::put('/integracoes', [IntegrationController::class, 'update'])->name('integrations.update');
+        Route::post('/integracoes/google/conectar', [IntegrationController::class, 'connect'])->name('integrations.google.connect');
+        Route::get('/integracoes/google/retorno', [IntegrationController::class, 'callback'])->name('integrations.google.callback');
+        Route::post('/integracoes/google/desconectar', [IntegrationController::class, 'disconnect'])->name('integrations.google.disconnect');
+        Route::post('/integracoes/google/eventos/{event}/repetir', [IntegrationController::class, 'retryCalendar'])->name('integrations.google.retry');
     });
     Route::post('/sair', [AuthController::class, 'logout'])->name('logout');
     Route::middleware('can:users.manage')->group(function () {

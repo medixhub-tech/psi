@@ -120,6 +120,8 @@ class Agenda
             }
             $appointment->save();
             Billing::syncAppointment($appointment, $fee);
+            Reminders::plan($appointment);
+            GoogleCalendar::plan($appointment);
             self::history($appointment, $existing ? 'rescheduled' : 'created', $before, $data['reason'] ?? null);
 
             return $appointment;
@@ -172,6 +174,10 @@ class Agenda
             $appointment->updated_by = auth()->id();
             $appointment->lock_version++;
             $appointment->save();
+            Reminders::plan($appointment);
+            if ($action === 'cancel') {
+                GoogleCalendar::plan($appointment);
+            }
             self::history($appointment, $action, $before, $reason);
         }, 3);
     }

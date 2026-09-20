@@ -17,10 +17,10 @@
 | Framework e versão visual | Laravel 13 + AdminLTE 4 | Início da implementação |
 | Preço ao agendar pela secretária | Valor padrão definido pelo psicólogo, sem edição pela secretária | Agenda/financeiro |
 | Google Agenda | Sistema → Google, calendário dedicado, sem convidados automáticos | Integrações |
-| Antecedência e-mail | A definir; não ativar envio sem regra | Integrações |
+| Antecedência e-mail | Confirmado: 24 horas antes | Implementado |
 | Consulta marcada com menos de 24h | Não enviar WhatsApp imediato | Integrações |
 | Tolerância de atraso e tentativas | Até 5 min após horário-alvo; depois expirar | Integrações |
-| Fornecedores de WhatsApp/e-mail | Adaptadores após escolha e validação das contas | Integrações |
+| Fornecedores de WhatsApp/e-mail | Evolution API escolhida; SMTP configurável no servidor | Homologação pendente |
 | Recorrência, duração e intervalo de consulta | Agendamento simples primeiro; parâmetros do psicólogo | Agenda |
 | Retenção, formatos clínicos e descarte | Definição específica com profissional antes de produção | Homologação |
 | Backups e recuperação | RPO 24h / RTO 8h propostos | Contratação/homologação |
@@ -63,3 +63,9 @@ Validação local: 49 testes e 363 verificações em MySQL, incluindo dois cená
 ## Atualização: prontuário e documentos
 
 Implementados registros clínicos cifrados, revisões imutáveis na aplicação, motivos obrigatórios após finalização, controle de versão, upload privado cifrado, download auditado e arquivamento/restauração. FKs compostas protegem o vínculo paciente/consulta. A secretária não acessa as rotas mesmo com permissões exclusivas indevidamente associadas ao perfil. Testes no MySQL: 59 cenários e 455 verificações. Próxima etapa: integrações, lembretes e cron. Sem implantação no cPanel.
+
+## Atualização: integrações e lembretes
+
+Implementados planejamento transacional por versão da consulta, lembretes WhatsApp/E-mail 24 horas antes, autorização por paciente, adaptadores Evolution e Meta, SMTP e cron limitado com trava de execução. Google OAuth com PKCE, tokens cifrados e sincronização de saída com ID estável. Painel exclusivo do profissional exibe configuração e resultados.
+
+81 testes / 541 verificações em MySQL, incluindo concorrência e provedores simulados. Credenciais, ativação real, confirmação de entrega por webhook, cron no cPanel e homologação externa continuam pendentes. Próxima etapa: configurar ambiente de homologação e validar operação/backup antes de produção.
