@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Patient;
+use App\Models\ServiceType;
 use App\Support\Agenda;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
@@ -64,11 +65,12 @@ class AppointmentController extends Controller
 
     private function form(Appointment $appointment): View
     {
-        return view('appointments.form', ['appointment' => $appointment, 'patients' => Patient::where('active', true)->orWhere('id', $appointment->patient_id)->orderBy('full_name')->get(['id', 'full_name', 'active']), 'timezone' => Agenda::timezone()]);
+        return view('appointments.form', ['serviceTypes' => ServiceType::where('active', true)->orderBy('name')->get(['id', 'name']), 'appointment' => $appointment, 'patients' => Patient::where('active', true)->orWhere('id', $appointment->patient_id)->orderBy('full_name')->get(['id', 'full_name', 'active']), 'timezone' => Agenda::timezone()]);
     }
 
     public function store(Request $request): RedirectResponse
     {
+        $request->validate(['service_type_id' => 'required|integer|exists:service_types,id']);
         $appointment = Agenda::save($this->validated($request));
 
         return to_route('appointments.index', ['date' => $appointment->starts_at->setTimezone(Agenda::timezone())->toDateString()])->with('status', 'Consulta agendada.');
@@ -107,6 +109,6 @@ class AppointmentController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate(['patient_id' => 'required|integer|exists:patients,id', 'starts_at' => 'required|date_format:Y-m-d\TH:i', 'ends_at' => 'required|date_format:Y-m-d\TH:i', 'modality' => ['required', Rule::in(['in_person', 'online'])], 'location' => 'nullable|string|max:255', 'lock_version' => 'sometimes|integer|min:1', 'reason' => 'nullable|string|max:255', 'confirm_waiting' => 'sometimes|accepted']);
+        return $request->validate(['service_type_id' => 'sometimes|integer|exists:service_types,id', 'patient_id' => 'required|integer|exists:patients,id', 'starts_at' => 'required|date_format:Y-m-d\TH:i', 'ends_at' => 'required|date_format:Y-m-d\TH:i', 'modality' => ['required', Rule::in(['in_person', 'online'])], 'location' => 'nullable|string|max:255', 'lock_version' => 'sometimes|integer|min:1', 'reason' => 'nullable|string|max:255', 'confirm_waiting' => 'sometimes|accepted']);
     }
 }

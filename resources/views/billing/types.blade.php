@@ -1,0 +1,11 @@
+@extends('layouts.app')
+@section('title','Tipos de atendimento')
+@section('subtitle','Defina os atendimentos oferecidos e os respectivos valores.')
+@section('content')
+<div class="card mb-4"><div class="card-body p-4"><h2 class="h5">Novo tipo de atendimento</h2>
+<form method="post" action="{{ route('finance.types.store') }}">@csrf
+<div class="row g-3"><div class="col-md-6"><label for="name" class="form-label">Nome</label><input class="form-control" id="name" name="name" maxlength="120" required></div><div class="col-md-3"><label for="amount" class="form-label">Valor (R$)</label><input class="form-control" id="amount" name="amount" inputmode="decimal" placeholder="150,00" required></div><div class="col-md-3"><label for="active" class="form-label">Situação</label><select class="form-select" id="active" name="active"><option value="1">Ativo</option><option value="0">Inativo</option></select></div></div><button class="btn btn-primary mt-3">Cadastrar atendimento</button></form>
+</div></div>
+<p class="text-secondary">Mudanças de preço valem para novos agendamentos. Inativar preserva as consultas existentes.</p>
+@forelse($types as $type)<div class="card mb-3"><div class="card-body p-4"><form method="post" action="{{ route('finance.types.update',$type) }}">@csrf @method('PUT')<input type="hidden" name="lock_version" value="{{ $type->lock_version }}"><div class="row g-3"><div class="col-md-6"><label class="form-label" for="name-{{ $type->id }}">Nome</label><input class="form-control" id="name-{{ $type->id }}" name="name" value="{{ $type->name }}" maxlength="120" required></div><div class="col-md-3"><label class="form-label" for="amount-{{ $type->id }}">Valor (R$)</label><input class="form-control" id="amount-{{ $type->id }}" name="amount" value="{{ $type->amount }}" inputmode="decimal" required></div><div class="col-md-3"><label class="form-label" for="active-{{ $type->id }}">Situação</label><select class="form-select" id="active-{{ $type->id }}" name="active"><option value="1" @selected($type->active)>Ativo</option><option value="0" @selected(!$type->active)>Inativo</option></select></div></div><button class="btn btn-outline-primary mt-3">Salvar alterações</button></form></div></div>@empty<p>Nenhum tipo cadastrado.</p>@endforelse
+@endsection

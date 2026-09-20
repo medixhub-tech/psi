@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\Role;
+use App\Models\ServiceType;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,6 +23,8 @@ class AgendaTest extends TestCase
 
     private Patient $patient;
 
+    private int $serviceTypeId;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,6 +34,7 @@ class AgendaTest extends TestCase
         DB::table('practice')->insert(['id' => 1, 'owner_user_id' => $this->owner->id, 'display_name' => 'Teste', 'contact_phone' => '11999990000']);
         $this->secretary = User::factory()->create()->refresh();
         $this->patient = Patient::factory()->create(['created_by' => $this->owner->id]);
+        $this->serviceTypeId = ServiceType::create(['name' => 'Psicoterapia', 'amount' => '150.00', 'active' => true])->id;
     }
 
     private function loginAs(User $user): static
@@ -40,7 +44,7 @@ class AgendaTest extends TestCase
 
     private function payload(array $extra = []): array
     {
-        return array_replace(['patient_id' => $this->patient->id, 'starts_at' => '2026-09-19T10:00', 'ends_at' => '2026-09-19T11:00', 'modality' => 'in_person'], $extra);
+        return array_replace(['service_type_id' => $this->serviceTypeId, 'patient_id' => $this->patient->id, 'starts_at' => '2026-09-19T10:00', 'ends_at' => '2026-09-19T11:00', 'modality' => 'in_person'], $extra);
     }
 
     private function schedule(array $extra = []): Appointment
@@ -187,7 +191,7 @@ class AgendaTest extends TestCase
         $tomorrow = $this->schedule(['starts_at' => '2026-09-20T10:00', 'ends_at' => '2026-09-20T11:00']);
         $this->action($tomorrow, 'arrive')->assertSessionHasErrors('agenda');
         $this->travel(2)->hours();
-        $this->action($a,'no_show')->assertSessionHasNoErrors();
-        $this->assertSame('no_show',$a->fresh()->status);
+        $this->action($a, 'no_show')->assertSessionHasNoErrors();
+        $this->assertSame('no_show', $a->fresh()->status);
     }
 }

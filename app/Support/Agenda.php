@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Appointment;
 use App\Models\Patient;
+use App\Models\ServiceType;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
@@ -107,7 +108,18 @@ class Agenda
             } else {
                 $appointment->created_by = auth()->id();
             }
+            $fee = null;
+            if (! $existing) {
+                $type = ServiceType::where('active', true)->lockForUpdate()->find($data['service_type_id'] ?? null);
+                if (! $type) {
+                    self::invalid('Selecione um tipo de atendimento ativo cadastrado pelo profissional.');
+                }
+                $appointment->service_type_id = $type->id;
+                $appointment->service_name = $type->name;
+                $fee = $type->amount;
+            }
             $appointment->save();
+            Billing::syncAppointment($appointment, $fee);
             self::history($appointment, $existing ? 'rescheduled' : 'created', $before, $data['reason'] ?? null);
 
             return $appointment;
@@ -184,9 +196,9 @@ class Agenda
         Gate::authorize('appointments.manage');
         DB::transaction(function () use ($id) {
             self::lockPractice();
-            abort_unless(DB::table('agenda_blocks')->where('id',$id)->exists(), 404);
-            DB::table('agenda_blocks')->where('id',$id)->delete();
-            Audit::record('agenda.unblocked','agenda_block',$id);
+            abort_unless(DB::table('agenda_blocks')->where('id', $id)->exists(), 404);
+            DB::table('agenda_blocks')->where('id', $id)->delete();
+            Audit::record('agenda.unblocked', 'agenda_block', $id);
         }, 3);
     }
 }
