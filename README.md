@@ -10,7 +10,7 @@ Também implementados: cadastro administrativo de pacientes, agenda diária, blo
 
 Implementados: tipos de atendimento e valores cadastrados pelo profissional; cobrança por consulta; recebimentos parciais ou integrais; estornos integrais; ajustes com motivo e resumo financeiro por período. A secretária acessa somente cobranças das consultas do dia local.
 
-Prontuário, documentos e integrações permanecem pendentes. As permissões desses módulos já estão catalogadas, mas não representam funcionalidades disponíveis nesta entrega. MFA ainda não implementado. Não está liberado para operação clínica em produção.
+Prontuário e documentos implementados: registros por paciente com consulta opcional, rascunhos e finalização, revisões preservadas e correções com motivo. Arquivos PDF/JPEG/PNG de até 10 MB, cifrados e privados, com download autorizado e arquivamento reversível. Acesso exclusivo do psicólogo e auditado. Integrações permanecem pendentes. As permissões desses módulos já estão catalogadas, mas não representam funcionalidades disponíveis nesta entrega. MFA ainda não implementado. Não está liberado para operação clínica em produção.
 
 ## Executar localmente
 
@@ -71,3 +71,13 @@ A linha `practice.id=1` é criada somente pelo comando de bootstrap.
 Fluxo autorizado: branches `codex/` e merge direto na `main` após verificações, sem Pull Requests. `.env`, credenciais, logs e dados clínicos nunca devem ser commitados. Alterar um repositório público para privado no futuro não recolhe cópias já feitas.
 
 Recebimentos e estornos são registros internos, sem transferência bancária automática. Totais usam a data do lançamento; saldos usam o vencimento da consulta e todos os pagamentos atuais. Despesas, conciliação bancária e emissão fiscal não fazem parte desta etapa.
+
+## Prontuário e documentos
+
+Abra Pacientes e selecione Prontuário ou Documentos. Cada salvamento clínico gera uma versão; nenhuma revisão anterior é sobrescrita. Correções após uma finalização exigem motivo. Não há salvamento automático. Por sigilo, textos clínicos não são guardados na sessão após erros de validação.
+
+Conteúdo, motivos de correção, nomes e bytes dos arquivos usam a cifragem autenticada do Laravel com APP_KEY. Arquivos ficam em storage/app/private/clinical, sem rota pública ou URL temporária. Downloads são anexos e conferem integridade; arquivamento bloqueia o download até restauração. A auditoria guarda IDs e ações, sem conteúdo clínico.
+
+Backup deve incluir banco, arquivos privados e APP_KEY preservada separadamente e com acesso restrito. Perder a chave impede recuperar o conteúdo. Não execute key:generate em atualizações. Rotação requer manter chaves anteriores em APP_PREVIOUS_KEYS e validar restauração antes de remover qualquer chave. No cPanel, configurar upload_max_filesize de pelo menos 10M e post_max_size superior (ex.: 12M), além dos limites do servidor web. Não há assinatura digital, editor de documentos ou antivírus nesta etapa.
+
+Validação desta etapa: 59 testes / 455 verificações em MySQL. Dois testes de concorrência financeira são exclusivos do MySQL. A liberação em produção depende da homologação e do teste de restauração.

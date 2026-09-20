@@ -8,7 +8,7 @@
 </div>
 <div class="card"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Situação</th><th>Ações</th></tr></thead><tbody>
 @forelse($patients as $patient)
-<tr><td class="fw-semibold">{{ $patient->full_name }}</td><td>{{ $patient->phone ?: '—' }}</td><td>{{ $patient->email ?: '—' }}</td><td><span class="badge {{ $patient->active?'text-bg-success':'text-bg-secondary' }}">{{ $patient->active?'Ativo':'Inativo' }}</span></td><td><a class="btn btn-sm btn-outline-secondary" href="{{ route('patients.edit',$patient) }}">Editar cadastro</a></td></tr>
+<tr><td class="fw-semibold">{{ $patient->full_name }}</td><td>{{ $patient->phone ?: '—' }}</td><td>{{ $patient->email ?: '—' }}</td><td><span class="badge {{ $patient->active?'text-bg-success':'text-bg-secondary' }}">{{ $patient->active?'Ativo':'Inativo' }}</span></td><td><a class="btn btn-sm btn-outline-secondary" href="{{ route('patients.edit',$patient) }}">Editar cadastro</a> @can('clinical.manage')<a class="btn btn-sm btn-outline-primary" href="{{ route('clinical.index',$patient) }}">Prontuário</a>@endcan @can('documents.manage')<a class="btn btn-sm btn-outline-primary" href="{{ route('documents.index',$patient) }}">Documentos</a>@endcan</td></tr>
 @empty<tr><td colspan="5" class="text-center p-5 text-secondary">{{ $term?'Nenhum paciente encontrado para esta busca.':'Nenhum paciente cadastrado. Comece pelo botão Novo paciente.' }}</td></tr>@endforelse
 </tbody></table></div><div class="card-footer">{{ $patients->links() }}</div></div>
 @endsection

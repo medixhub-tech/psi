@@ -59,3 +59,7 @@ Decisão confirmada: o profissional cadastra tipos de atendimento e respectivos 
 A secretária consulta e registra recebimentos somente nas consultas do dia local. Ajustes, dispensa, anulação, estornos e relatórios são exclusivos do profissional. Recebimentos parciais/integral usam centavos inteiros e DECIMAL no MySQL; UUID garante idempotência. Travas e controle de versão protegem saldo e reagendamento concorrente.
 
 Validação local: 49 testes e 363 verificações em MySQL, incluindo dois cenários entre processos simultâneos. SQLite: 47 testes e 351 verificações; dois testes exclusivos de MySQL ignorados. Telas conferidas com dados fictícios. Próxima etapa: prontuário e documentos. Sem implantação no cPanel. Git: merge direto na main, sem PR, conforme autorizado.
+
+## Atualização: prontuário e documentos
+
+Implementados registros clínicos cifrados, revisões imutáveis na aplicação, motivos obrigatórios após finalização, controle de versão, upload privado cifrado, download auditado e arquivamento/restauração. FKs compostas protegem o vínculo paciente/consulta. A secretária não acessa as rotas mesmo com permissões exclusivas indevidamente associadas ao perfil. Testes no MySQL: 59 cenários e 455 verificações. Próxima etapa: integrações, lembretes e cron. Sem implantação no cPanel.

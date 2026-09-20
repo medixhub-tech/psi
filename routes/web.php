@@ -3,6 +3,8 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\ClinicalController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -41,6 +43,18 @@ Route::middleware(['auth', 'active.session'])->group(function () {
         Route::put('/financeiro/atendimentos/{type}', [BillingController::class, 'saveType'])->name('finance.types.update');
         Route::put('/cobrancas/{charge}', [BillingController::class, 'adjust'])->name('finance.adjust');
         Route::post('/cobrancas/{charge}/estornos/{payment}', [BillingController::class, 'reverse'])->name('finance.reverse');
+    });
+    Route::middleware('can:clinical.manage')->group(function () {
+        Route::get('/pacientes/{patient}/prontuario', [ClinicalController::class, 'index'])->name('clinical.index');
+        Route::post('/pacientes/{patient}/prontuario', [ClinicalController::class, 'store'])->name('clinical.store');
+        Route::get('/pacientes/{patient}/prontuario/{entry}', [ClinicalController::class, 'show'])->name('clinical.show');
+        Route::post('/pacientes/{patient}/prontuario/{entry}/revisoes', [ClinicalController::class, 'revise'])->name('clinical.revise');
+    });
+    Route::middleware('can:documents.manage')->group(function () {
+        Route::get('/pacientes/{patient}/documentos', [DocumentController::class, 'index'])->name('documents.index');
+        Route::post('/pacientes/{patient}/documentos', [DocumentController::class, 'store'])->name('documents.store');
+        Route::get('/pacientes/{patient}/documentos/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+        Route::put('/pacientes/{patient}/documentos/{document}/arquivo', [DocumentController::class, 'archive'])->name('documents.archive');
     });
     Route::post('/sair', [AuthController::class, 'logout'])->name('logout');
     Route::middleware('can:users.manage')->group(function () {
