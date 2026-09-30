@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\ExternalApi\CpfLookup;
 use App\Models\User;
-use App\Support\CpfLookup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;

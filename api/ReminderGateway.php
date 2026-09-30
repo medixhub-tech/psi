@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\ExternalApi;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;

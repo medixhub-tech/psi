@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "medixhub/psi",
     "type": "project",
-    "description": "Sistema para consult\u00f3rio individual de psicologia",
+    "description": "Sistema para consultório individual de psicologia",
     "keywords": [
         "laravel",
         "framework"
@@ -25,7 +25,8 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "App\\ExternalApi\\": "api/"
         }
     },
     "autoload-dev": {

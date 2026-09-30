@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\ExternalApi\GoogleCalendar;
+use App\ExternalApi\ReminderGateway;
 use App\Support\Audit;
-use App\Support\GoogleCalendar;
-use App\Support\ReminderGateway;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\ExternalApi\GoogleCalendar;
 use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\ServiceType;

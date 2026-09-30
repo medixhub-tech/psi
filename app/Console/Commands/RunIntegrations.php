@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Support\GoogleCalendar;
+use App\ExternalApi\GoogleCalendar;
 use App\Support\Reminders;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;

@@ -123,3 +123,9 @@ Profissional e usuários com permissão de gerenciar pacientes podem consultar o
 Validação automatizada usa respostas simuladas. A ativação depende de URL e token de uma instância implantada e de homologação do serviço.
 
 Na homologação local, a API pode usar HTTP exclusivamente em 127.0.0.1, com APP_ENV=local ou homologacao. Produção continua exigindo HTTPS. Exemplo: CPF_LOOKUP_URL=http://127.0.0.1:8082, com token Bearer definido em ambos os serviços. O serviço Python deve ser iniciado com uvicorn app.main:app --host 127.0.0.1 --port 8082 e SOURCE=trt3 para consultas na fonte TRT3; SOURCE=exemplo retorna somente dados fictícios. A disponibilidade da consulta real depende do serviço externo.
+
+### Organização das integrações
+
+A pasta api/ reúne os clientes externos de CPF, CEP, WhatsApp/e-mail e Google Calendar; as regras de agenda e processamento permanecem em app/Support. ViaCEP preenche logradouro, bairro, cidade e UF nos endereços, com edição manual e campos separados de número e complemento.
+
+A biblioteca jansenfelipe/cpf-gratis foi avaliada: seu getParams depende de #idCaptchaInput e do serviço antigo de CAPTCHA. A página atual consultada apresenta hCaptcha/reCAPTCHA e não contém esse seletor; por isso ela não substitui a integração existente nesta etapa. A consulta existente continua identificada como certidões, não Receita. A integração de CNPJ e o cadastro de empresas aguardam definição do provedor.

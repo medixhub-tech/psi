@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\ExternalApi\ReminderGateway;
 use App\Models\Appointment;
 use App\Models\Patient;
 use Carbon\CarbonImmutable;

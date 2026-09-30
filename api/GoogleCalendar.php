@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\ExternalApi;
 
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Crypt;

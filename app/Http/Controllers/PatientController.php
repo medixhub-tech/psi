@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\ExternalApi\CpfLookup;
+use App\ExternalApi\ViaCep;
 use App\Models\Patient;
 use App\Support\Audit;
-use App\Support\CpfLookup;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -15,6 +16,13 @@ use Illuminate\Validation\ValidationException;
 
 class PatientController extends Controller
 {
+    public function lookupCep(Request $request): JsonResponse
+    {
+        $data = $request->validate(['cep' => ['required', 'string', 'regex:/^[0-9]{5}-?[0-9]{3}$/']]);
+
+        return response()->json(ViaCep::consult(str_replace('-', '', $data['cep'])))->header('Cache-Control', 'no-store');
+    }
+
     public function lookupCpf(Request $request): JsonResponse
     {
         $data = $request->validate(['cpf' => ['required', 'string', 'max:14', 'regex:/^(?:[0-9]{11}|[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2})$/']]);
@@ -79,6 +87,6 @@ class PatientController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate(['whatsapp_reminders' => 'sometimes|boolean', 'email_reminders' => 'sometimes|boolean', 'communication_source' => 'nullable|required_if:whatsapp_reminders,1|required_if:email_reminders,1|string|max:160', 'full_name' => 'required|string|max:160', 'birth_date' => 'nullable|date_format:Y-m-d|before_or_equal:today', 'phone' => ['nullable', 'required_if:whatsapp_reminders,1', 'string', 'max:25', Rule::when($request->boolean('whatsapp_reminders'), 'regex:/^\+[1-9][0-9]{9,14}$/')], 'email' => 'nullable|required_if:email_reminders,1|email|max:254', 'guardian_name' => 'nullable|string|max:160', 'guardian_phone' => 'nullable|string|max:25', 'active' => 'required|boolean']);
+        return $request->validate(['postal_code' => ['nullable', 'string', 'regex:/^[0-9]{5}-?[0-9]{3}$/'], 'street' => 'nullable|string|max:160', 'address_number' => 'nullable|string|max:30', 'address_complement' => 'nullable|string|max:160', 'district' => 'nullable|string|max:160', 'city' => 'nullable|string|max:160', 'state' => ['nullable', 'regex:/^[A-Z]{2}$/'], 'whatsapp_reminders' => 'sometimes|boolean', 'email_reminders' => 'sometimes|boolean', 'communication_source' => 'nullable|required_if:whatsapp_reminders,1|required_if:email_reminders,1|string|max:160', 'full_name' => 'required|string|max:160', 'birth_date' => 'nullable|date_format:Y-m-d|before_or_equal:today', 'phone' => ['nullable', 'required_if:whatsapp_reminders,1', 'string', 'max:25', Rule::when($request->boolean('whatsapp_reminders'), 'regex:/^\+[1-9][0-9]{9,14}$/')], 'email' => 'nullable|required_if:email_reminders,1|email|max:254', 'guardian_name' => 'nullable|string|max:160', 'guardian_phone' => 'nullable|string|max:25', 'active' => 'required|boolean']);
     }
 }

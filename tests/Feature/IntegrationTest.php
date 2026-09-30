@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\ExternalApi\GoogleCalendar;
+use App\ExternalApi\ReminderGateway;
 use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\ServiceType;
 use App\Models\User;
-use App\Support\GoogleCalendar;
-use App\Support\ReminderGateway;
 use App\Support\Reminders;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
