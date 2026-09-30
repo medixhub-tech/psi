@@ -36,6 +36,20 @@ class CpfLookupTest extends TestCase
         $this->assertDatabaseCount('patients', 0);
     }
 
+    public function test_http_is_allowed_only_on_loopback_in_local_environments(): void
+    {
+        Http::fake(['127.0.0.1:8082/*' => Http::response(['cpf' => '52998224725', 'encontrado' => true, 'nome_certidao' => 'TESTE'])]);
+        config(['integrations.cpf.url' => 'http://127.0.0.1:8082']);
+        $this->app->instance('env', 'production');
+        $this->assertSame(['status' => 'unavailable'], CpfLookup::consult('52998224725'));
+        Http::assertNothingSent();
+        $this->app->instance('env', 'homologacao');
+        $this->assertSame('found', CpfLookup::consult('52998224725')['status']);
+        config(['integrations.cpf.url' => 'http://external.example.test']);
+        $this->assertSame(['status' => 'unavailable'], CpfLookup::consult('52998224725'));
+        Http::assertSentCount(1);
+    }
+
     public function test_invalid_cpf_never_reaches_provider(): void
     {
         $this->login();

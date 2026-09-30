@@ -30,7 +30,11 @@ class CpfLookup
     {
         $url = config('integrations.cpf.url');
         $token = config('integrations.cpf.token');
-        if (! is_string($url) || ! filter_var($url, FILTER_VALIDATE_URL) || parse_url($url, PHP_URL_SCHEME) !== 'https' || ! is_string($token) || $token === '') {
+        $localHttp = is_string($url)
+            && app()->environment(['local', 'homologacao'])
+            && parse_url($url, PHP_URL_SCHEME) === 'http'
+            && parse_url($url, PHP_URL_HOST) === '127.0.0.1';
+        if (! is_string($url) || ! filter_var($url, FILTER_VALIDATE_URL) || (parse_url($url, PHP_URL_SCHEME) !== 'https' && ! $localHttp) || ! is_string($token) || $token === '') {
             return ['status' => 'unavailable'];
         }
         try {
