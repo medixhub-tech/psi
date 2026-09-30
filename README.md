@@ -113,3 +113,11 @@ Mudar o calendário preserva eventos do anterior. Desconectar interrompe novos t
 Após editar .env, recrie o cache de configuração. Homologue com consultas fictícias e contas de destinatários controladas pelo profissional antes de ativar pacientes reais. Não houve envio externo nem conexão com conta Google real nesta etapa. Validação local: 81 testes / 541 verificações em MySQL, com workers concorrentes e HTTP/SMTP simulados. Aceitação e entrega reais dependem das contas configuradas.
 
 Referências: [Evolution DTO](https://github.com/EvolutionAPI/evolution-api/blob/main/src/api/dto/sendMessage.dto.ts), [Google eventos](https://developers.google.com/workspace/calendar/api/v3/reference/events/insert), [Google OAuth](https://developers.google.com/identity/protocols/oauth2/web-server), [Meta API](https://www.postman.com/meta/whatsapp-business-platform/documentation/wlk6lh4/whatsapp-cloud-api).
+
+### Consulta de nome pelo CPF
+
+O cadastro de pacientes integra o [opastorello/cpf-validador](https://github.com/opastorello/cpf-validador), pelo endpoint POST /consulta/cpf. Hospede o serviço Python separadamente, conforme a documentação dele, com HTTPS e API_TOKEN definido. No Medpsico, configure CPF_LOOKUP_URL com a URL base e CPF_LOOKUP_TOKEN com esse token; atualize o cache de configuração após alterar o ambiente. O repositório GitHub não é o endereço de uma API hospedada.
+
+Profissional e usuários com permissão de gerenciar pacientes podem consultar o CPF completo e aplicar o nome retornado após conferência. A consulta usa as certidões da fonte configurada no serviço (TRT3 ou TCU), não uma consulta direta à Receita. Não preenche nascimento, endereço ou telefone. O CPF é usado apenas para consulta, sem persistência no cadastro; a resposta ao navegador contém somente o nome e o estado da consulta. Dados de processos e certidões não são importados. O cadastro manual continua disponível em caso de ausência de resultado ou indisponibilidade. Limite local: 10 consultas por minuto por usuário; timeout de 20 segundos, sem repetição automática. O serviço externo deve ter seus próprios logs e políticas de retenção configurados pelo administrador.
+
+Validação automatizada usa respostas simuladas. A ativação depende de URL e token de uma instância implantada e de homologação do serviço.

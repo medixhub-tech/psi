@@ -23,6 +23,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'active.session'])->group(function () {
     Route::get('/painel', [AppointmentController::class, 'dashboard'])->name('dashboard');
     Route::get('/painel/fila', [AppointmentController::class, 'queue'])->name('appointments.queue');
+    Route::post('/pacientes/consulta-cpf', [PatientController::class, 'lookupCpf'])->name('patients.cpf')->middleware(['can:patients.manage', 'throttle:10,1']);
     Route::resource('pacientes', PatientController::class)->parameters(['pacientes' => 'patient'])->names('patients')->except(['show', 'destroy'])->middleware('can:patients.manage');
     Route::get('/agenda', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::middleware('can:appointments.manage')->group(function () {

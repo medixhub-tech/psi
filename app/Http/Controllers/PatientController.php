@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use App\Support\Audit;
+use App\Support\CpfLookup;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +15,17 @@ use Illuminate\Validation\ValidationException;
 
 class PatientController extends Controller
 {
+    public function lookupCpf(Request $request): JsonResponse
+    {
+        $data = $request->validate(['cpf' => ['required', 'string', 'max:14', 'regex:/^(?:[0-9]{11}|[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2})$/']]);
+        $cpf = preg_replace('/[^0-9]/', '', $data['cpf']);
+        if (! CpfLookup::valid($cpf)) {
+            return response()->json(['status' => 'invalid'], 422)->header('Cache-Control', 'no-store');
+        }
+
+        return response()->json(CpfLookup::consult($cpf))->header('Cache-Control', 'no-store');
+    }
+
     public function index(Request $request): View
     {
         $data = $request->validate(['q' => 'nullable|string|max:160']);

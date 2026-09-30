@@ -5,6 +5,14 @@
 <div class="card form-card"><div class="card-body p-4"><form method="post" action="{{ $patient->exists?route('patients.update',$patient):route('patients.store') }}">@csrf
 @if($patient->exists) @method('PUT')<input type="hidden" name="lock_version" value="{{ $patient->lock_version }}">@endif
 <div class="row g-3">
+<div class="col-12"><fieldset class="border rounded p-3" id="cpf-lookup" data-url="{{ route('patients.cpf') }}">
+<legend class="float-none w-auto fs-6 px-2">Consultar nome pelo CPF</legend>
+<label class="form-label" for="lookup-cpf">CPF do paciente</label>
+<div class="input-group"><input class="form-control" id="lookup-cpf" inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00"><button type="button" class="btn btn-outline-primary" id="lookup-cpf-button">Consultar</button></div>
+<p class="form-text">Consulta em certidões pela API CPF Validador. Confira o nome com o paciente. O CPF é usado apenas na consulta e não é salvo neste cadastro.</p>
+<p id="lookup-cpf-status" role="status" aria-live="polite"></p>
+<button type="button" class="btn btn-outline-primary d-none" id="lookup-cpf-apply">Usar nome consultado</button>
+</fieldset></div>
 <div class="col-md-8"><label class="form-label" for="full_name">Nome completo</label><input class="form-control" id="full_name" name="full_name" value="{{ old('full_name',$patient->full_name) }}" maxlength="160" required></div>
 <div class="col-md-4"><label class="form-label" for="birth_date">Data de nascimento</label><input class="form-control" id="birth_date" name="birth_date" type="date" value="{{ old('birth_date',$patient->birth_date?->format('Y-m-d')) }}" max="{{ now()->format('Y-m-d') }}"></div>
 <div class="col-md-6"><label class="form-label" for="phone">Telefone</label><input class="form-control" id="phone" name="phone" type="tel" value="{{ old('phone',$patient->phone) }}" maxlength="25"></div>
@@ -15,4 +23,5 @@
 <div class="col-md-6"><label class="form-label" for="active">Situação</label><select class="form-select" id="active" name="active"><option value="1" @selected(old('active',$patient->active)==1)>Ativo</option><option value="0" @selected(old('active',$patient->active)==0)>Inativo</option></select><div class="form-text">Inativar impede novos agendamentos e preserva o histórico.</div></div>
 </div><div class="d-flex gap-2 mt-4"><button class="btn btn-primary">Salvar cadastro</button><a class="btn btn-light" href="{{ route('patients.index') }}">Cancelar</a></div>
 </form></div></div>
+<script src="{{ asset('js/patient-cpf.js') }}" defer></script>
 @endsection
