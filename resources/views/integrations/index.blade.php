@@ -12,6 +12,13 @@
 <label class="form-label" for="evolution_token">Chave da API</label><input class="form-control" id="evolution_token" name="token" type="password" autocomplete="new-password" maxlength="2048" @required(!$secrets['evolution'])>
 <p class="form-text">{{ $secrets['evolution']?'Chave salva. Deixe em branco para mantê-la.':'Informe a chave fornecida pela Evolution API.' }}</p>
 <button class="btn btn-primary">Salvar Evolution API</button></form>
+<div class="border-top mt-3 pt-3">
+@if(str_starts_with($credentials['evolution']['url']??'', 'https://'))
+<a href="{{ rtrim($credentials['evolution']['url'],'/').'/manager' }}" target="_blank" rel="noopener noreferrer">Abrir painel da sua Evolution API ↗</a><br>
+@endif
+<a href="https://github.com/evolution-foundation/evolution-api#readme" target="_blank" rel="noopener noreferrer">Como configurar e obter as credenciais da Evolution API ↗</a>
+<p class="form-text mb-0">A chave é definida na sua instalação (AUTHENTICATION_API_KEY) ou fornecida por quem hospeda a API. Não existe um portal único de emissão. Salve a URL base para abrir o painel da sua instalação por aqui.</p>
+</div>
 </div></div></div>
 <div class="col-lg-6"><div class="card h-100"><div class="card-body p-4"><h2 class="h5">Configuração Google Calendar</h2>
 <p class="text-secondary">No Google Cloud, habilite a Calendar API e crie um cliente OAuth do tipo Aplicativo da Web. Cadastre exatamente esta URL de redirecionamento:</p>
@@ -26,7 +33,10 @@
 <label class="form-label" for="google_calendar">ID do calendário</label><input class="form-control" id="google_calendar" name="calendar_id" required maxlength="255" value="{{ old('calendar_id',$credentials['google']['calendar_id']??'') }}">
 <p class="form-text">No Google Agenda: Configurações do calendário → Integrar agenda → ID da agenda. Use o ID explícito de uma agenda dedicada.</p>
 <button class="btn btn-primary">Salvar configuração Google</button>
-</fieldset></form></div></div></div></div>
+</fieldset></form>
+<div class="border-top mt-3 pt-3"><a href="https://console.cloud.google.com/auth/clients" target="_blank" rel="noopener noreferrer">Criar credenciais OAuth no Google Cloud ↗</a>
+<p class="form-text mb-0">Selecione seu projeto e crie um cliente do tipo Aplicativo da Web. <a href="https://developers.google.com/workspace/guides/create-credentials?hl=pt-br#web-application" target="_blank" rel="noopener noreferrer">Ver instruções oficiais ↗</a></p></div>
+</div></div></div></div>
 
 @php($labels=['pending'=>'Pendente','processing'=>'Envio em andamento','accepted'=>'Aceito pelo provedor','unknown'=>'Resultado incerto','failed'=>'Falhou','cancelled'=>'Cancelado','expired'=>'Prazo expirado','synced'=>'Sincronizado','retry'=>'Nova tentativa agendada','error'=>'Erro'])
 <div class="card mb-4"><div class="card-body p-4"><h2 class="h5">Lembretes 24 horas antes</h2><p class="text-secondary">WhatsApp e e-mail usam o horário da consulta. O paciente deve autorizar cada canal em seu cadastro. Consultas marcadas com menos de 24 horas não geram envio imediato.</p><form method="post" action="{{ route('integrations.update') }}">@csrf @method('PUT')<input type="hidden" name="lock_version" value="{{ $settings->lock_version }}">
