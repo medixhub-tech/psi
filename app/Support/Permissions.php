@@ -12,6 +12,7 @@ class Permissions
     ];
 
     public const OWNER = [
+        'companies.manage' => 'Cadastro de empresas',
         'users.manage' => 'Administrar usuários e perfis',
         'attendance.treat' => 'Chamar e concluir atendimento',
         'finance.manage' => 'Gestão financeira e relatórios',

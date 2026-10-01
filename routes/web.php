@@ -4,6 +4,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ClinicalController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\IntegrationController;
 use App\Http\Controllers\PatientController;
@@ -25,6 +26,7 @@ Route::middleware(['auth', 'active.session'])->group(function () {
     Route::get('/painel/fila', [AppointmentController::class, 'queue'])->name('appointments.queue');
     Route::post('/enderecos/consulta-cep', [PatientController::class, 'lookupCep'])->name('addresses.lookup')->middleware(['can:patients.manage', 'throttle:30,1']);
     Route::post('/pacientes/consulta-cpf', [PatientController::class, 'lookupCpf'])->name('patients.cpf')->middleware(['can:patients.manage', 'throttle:10,1']);
+    Route::resource('empresas', CompanyController::class)->parameters(['empresas' => 'company'])->names('companies')->except(['show', 'destroy'])->middleware('can:companies.manage');
     Route::resource('pacientes', PatientController::class)->parameters(['pacientes' => 'patient'])->names('patients')->except(['show', 'destroy'])->middleware('can:patients.manage');
     Route::get('/agenda', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::middleware('can:appointments.manage')->group(function () {
