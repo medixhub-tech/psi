@@ -50,6 +50,15 @@ class CpfLookupTest extends TestCase
         Http::assertSentCount(1);
     }
 
+    public function test_provider_does_not_recognize_cpf_is_distinct_from_absent_name(): void
+    {
+        Http::fakeSequence()
+            ->push(['cpf' => '52998224725', 'encontrado' => false, 'cpf_inexistente' => true])
+            ->push(['cpf' => '52998224725', 'encontrado' => false]);
+        $this->assertSame(['status' => 'not_recognized'], CpfLookup::consult('52998224725'));
+        $this->assertSame(['status' => 'not_found'], CpfLookup::consult('52998224725'));
+    }
+
     public function test_invalid_cpf_never_reaches_provider(): void
     {
         $this->login();

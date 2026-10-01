@@ -46,6 +46,9 @@ class CpfLookup
             if (! is_array($data) || ! empty($data['erro']) || preg_replace('/[^0-9]/', '', (string) ($data['cpf'] ?? '')) !== $cpf) {
                 return ['status' => 'unavailable'];
             }
+            if (($data['encontrado'] ?? null) === false && ($data['cpf_inexistente'] ?? false) === true) {
+                return ['status' => 'not_recognized'];
+            }
             if (($data['encontrado'] ?? null) === false) {
                 return ['status' => 'not_found'];
             }

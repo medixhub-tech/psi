@@ -5,6 +5,7 @@
     const button = document.getElementById('lookup-cpf-button');
     const apply = document.getElementById('lookup-cpf-apply');
     const status = document.getElementById('lookup-cpf-status');
+    const name = document.getElementById('full_name');
     let result = null;
     let revision = 0;
     cpf.addEventListener('input', () => {
@@ -18,6 +19,7 @@
         result = null;
         apply.classList.add('d-none');
         button.disabled = true;
+        const originalName = name.value;
         status.textContent = 'Consultando...';
         try {
             const response = await fetch(panel.dataset.url, {
@@ -36,9 +38,19 @@
             if (data.status === 'found') {
                 result = data.name;
                 status.textContent = 'Nome encontrado: ' + result + '. Confira antes de usar.';
-                apply.classList.remove('d-none');
+                if (!originalName.trim() && name.value === originalName) {
+                    name.value = result;
+                    status.textContent = 'Nome preenchido pela consulta. Confira antes de salvar.';
+                } else {
+                    apply.classList.remove('d-none');
+                }
             } else {
-                status.textContent = data.status === 'not_found' ? 'Nome não encontrado. Preencha o cadastro manualmente.' : 'Consulta indisponível. Preencha o cadastro manualmente.';
+                const messages = {
+                    not_recognized: 'O serviço consultado não reconheceu este CPF. Confira os dígitos. Esse retorno não comprova inexistência ou irregularidade na Receita.',
+                    not_found: 'O serviço consultado não retornou o nome deste CPF. Nenhum dado foi alterado.',
+                    unavailable: 'O serviço de consulta não respondeu corretamente. Tente novamente mais tarde.'
+                };
+                status.textContent = messages[data.status] || messages.unavailable;
             }
         } catch {
             if (current === revision) status.textContent = 'Consulta indisponível. Preencha o cadastro manualmente.';
