@@ -3,6 +3,7 @@
 namespace App\ExternalApi;
 
 use App\Models\Appointment;
+use App\Support\IntegrationCredentials;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -11,7 +12,7 @@ class GoogleCalendar
 {
     public static function configured(): bool
     {
-        return filled(config('integrations.google.client_id')) && filled(config('integrations.google.client_secret')) && filled(config('integrations.google.calendar_id')) && config('integrations.google.calendar_id') !== 'primary';
+        return filled((IntegrationCredentials::get('google')['client_id'] ?? null)) && filled((IntegrationCredentials::get('google')['client_secret'] ?? null)) && filled((IntegrationCredentials::get('google')['calendar_id'] ?? null)) && (IntegrationCredentials::get('google')['calendar_id'] ?? null) !== 'primary';
     }
 
     public static function plan(Appointment $appointment): void
@@ -72,7 +73,7 @@ class GoogleCalendar
             return;
         }[$row,$connection,$appointment] = $snapshot;
         try {
-            $tokenResponse = Http::asForm()->connectTimeout(3)->timeout(5)->withoutRedirecting()->post('https://oauth2.googleapis.com/token', ['client_id' => config('integrations.google.client_id'), 'client_secret' => config('integrations.google.client_secret'), 'refresh_token' => Crypt::decryptString($connection->refresh_token_ciphertext), 'grant_type' => 'refresh_token']);
+            $tokenResponse = Http::asForm()->connectTimeout(3)->timeout(5)->withoutRedirecting()->post('https://oauth2.googleapis.com/token', ['client_id' => (IntegrationCredentials::get('google')['client_id'] ?? null), 'client_secret' => (IntegrationCredentials::get('google')['client_secret'] ?? null), 'refresh_token' => Crypt::decryptString($connection->refresh_token_ciphertext), 'grant_type' => 'refresh_token']);
             $token = $tokenResponse->json('access_token');
             if (! $tokenResponse->successful() || ! is_string($token) || $token === '') {
                 self::result($row, 'error', 'oauth_refresh_failed');

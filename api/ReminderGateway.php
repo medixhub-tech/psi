@@ -2,6 +2,7 @@
 
 namespace App\ExternalApi;
 
+use App\Support\IntegrationCredentials;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
@@ -12,7 +13,7 @@ class ReminderGateway
         if ($provider === 'smtp') {
             return config('mail.default') === 'smtp' && filled(config('mail.mailers.smtp.host')) && filled(config('mail.from.address'));
         }
-        $c = config('integrations.'.$provider, []);
+        $c = IntegrationCredentials::get($provider);
         if ($provider === 'meta') {
             return filled($c['token'] ?? null) && preg_match('/^v[0-9]+\.[0-9]+$/', $c['version'] ?? '') && preg_match('/^[0-9]+$/', $c['phone_id'] ?? '') && filled($c['template'] ?? null);
         }
@@ -33,7 +34,7 @@ class ReminderGateway
 
             return ['status' => 'accepted'];
         }
-        $c = config('integrations.'.$provider);
+        $c = IntegrationCredentials::get($provider);
         $http = Http::acceptJson()->connectTimeout(3)->timeout(5)->withoutRedirecting();
         if ($provider === 'meta') {
             $response = $http->withToken($c['token'])->post('https://graph.facebook.com/'.$c['version'].'/'.$c['phone_id'].'/messages', ['messaging_product' => 'whatsapp', 'to' => $destination, 'type' => 'template', 'template' => ['name' => $c['template'], 'language' => ['code' => $c['language']], 'components' => [['type' => 'body', 'parameters' => array_map(fn ($value) => ['type' => 'text', 'text' => $value], $parts)]]]]);

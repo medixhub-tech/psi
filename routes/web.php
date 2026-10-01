@@ -63,6 +63,7 @@ Route::middleware(['auth', 'active.session'])->group(function () {
     });
     Route::middleware('can:integrations.manage')->group(function () {
         Route::get('/integracoes', [IntegrationController::class, 'index'])->name('integrations.index');
+        Route::put('/integracoes/credenciais/{provider}', [IntegrationController::class, 'credentials'])->name('integrations.credentials');
         Route::put('/integracoes', [IntegrationController::class, 'update'])->name('integrations.update');
         Route::post('/integracoes/google/conectar', [IntegrationController::class, 'connect'])->name('integrations.google.connect');
         Route::get('/integracoes/google/retorno', [IntegrationController::class, 'callback'])->name('integrations.google.callback');
